@@ -86,10 +86,10 @@ inline const std::string id_regex() {
 }
 const std::vector<std::string> regexes = {
     "fn",
-    "end",
     "let",
     "return",
-    "out",
+    "print",
+    "println",
     "global",
     "const",
     "matrix",
@@ -102,6 +102,8 @@ const std::vector<std::string> regexes = {
     "for",
     "while",
     "in",
+    "break",
+    "continue",
     "true",
     "false",
     int_lit_regex(),
@@ -134,8 +136,10 @@ const std::vector<std::string> regexes = {
     "\\.",
     "\\(",
     "\\)",
-    "\\[",
-    "\\]",
+    "[",
+    "]",
+    "{",
+    "}",
     "#",
     id_regex()
 };

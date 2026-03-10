@@ -1,10 +1,10 @@
 #pragma once
 #define TOKEN_LIST \
     X(TOK_FN) \
-    X(TOK_END) \
     X(TOK_LET) \
     X(TOK_RETURN) \
-    X(TOK_OUT) \
+    X(TOK_PRINT) \
+    X(TOK_PRINTLN) \
     X(TOK_GLOBAL) \
     X(TOK_CONST) \
     X(TOK_MATRIX) \
@@ -17,6 +17,8 @@
     X(TOK_FOR) \
     X(TOK_WHILE) \
     X(TOK_IN) \
+    X(TOK_BREAK) \
+    X(TOK_CONTINUE) \
     X(TOK_TRUE) \
     X(TOK_FALSE) \
     X(TOK_INT_LIT) \
@@ -51,6 +53,8 @@
     X(TOK_RPAREN) \
     X(TOK_LBRACKET) \
     X(TOK_RBRACKET) \
+    X(TOK_LBRACE) \
+    X(TOK_RBRACE) \
     X(TOK_COMMENT) \
     X(TOK_ID) \
     X(TOK_EOF) \

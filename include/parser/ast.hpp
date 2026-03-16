@@ -3,10 +3,12 @@
 #include <variant>
 #include <vector>
 #include "binary_op_node.hpp"
+#include "node.hpp"
 #include "postfix_op_node.hpp"
 #include "type_node.hpp"
 #include "unary_op_node.hpp"
 struct AST {
+    Node node;
     std::variant<
         int,
         double,
@@ -17,5 +19,5 @@ struct AST {
         TypeNode,
         UnaryOpNode
     > v;
-    std::vector<const AST *> children;
+    std::vector<std::unique_ptr<AST>> children;
 };

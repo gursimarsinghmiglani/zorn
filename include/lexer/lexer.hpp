@@ -197,7 +197,7 @@ inline std::vector<Lexeme> maximal_munch(std::string& source) {
             std::cerr << "Lexical error in line " << line_number << " at position " << last_accepting_pos_within_line + 1 << "\n";
             std::exit(1);
         }
-        Lexeme lexeme(start, last_accepting_pos - start + 1, line_number, dfa.token_types[last_accepting_state]);
+        Lexeme lexeme(start, last_accepting_pos - start + 1, line_number, source.substr(start, last_accepting_pos - start + 1, dfa.token_types[last_accepting_state]);
         lexemes.push_back(lexeme);
         pos = last_accepting_pos + 1;
         pos_within_line = last_accepting_pos_within_line + 1;

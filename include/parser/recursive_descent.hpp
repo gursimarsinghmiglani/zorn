@@ -1,6 +1,6 @@
 #pragma once
+#include "../lexer/lexeme.hpp"
 #include "ast.hpp"
-#include "lexer/lexeme.hpp"
 #include <iostream>
 struct Parser {
   std::vector<Lexeme> &lexemes;
@@ -8,7 +8,7 @@ struct Parser {
   Parser(std::vector<Lexeme> &lexemes) : lexemes(lexemes), pos(0) {}
   const Lexeme &peek() const { return lexemes[pos]; }
   void advance() { pos++; }
-  const Token tok() const { return peek().tok; }
+  Token tok() const { return peek().tok; }
   [[noreturn]] void error_function() const {
     std::cerr << "Parsing error in line " << peek().line_number
               << " at position " << pos << "\n";
@@ -34,6 +34,9 @@ struct Parser {
   std::unique_ptr<AST> parse_global_decl();
   std::unique_ptr<AST> parse_id();
   std::unique_ptr<AST> parse_type();
+  std::unique_ptr<AST> parse_base_type();
+  std::unique_ptr<AST> parse_int_lit();
+  std::unique_ptr<AST> parse_int_list();
   std::unique_ptr<AST> parse_expr();
   std::unique_ptr<AST> parse_assign_expr();
   std::unique_ptr<AST> parse_range_expr();
@@ -107,19 +110,62 @@ inline std::unique_ptr<AST> Parser::parse_id() {
 inline std::unique_ptr<AST> Parser::parse_type() {
   auto ast = std::make_unique<AST>();
   ast->node = Node::TYPE;
+  if (match(Token::TOK_VECTOR)) {
+    ast->v = TypeNode::VECTOR;
+    consume(Token::TOK_LESS);
+    ast->children.push_back(parse_base_type());
+    consume(Token::TOK_COMMA);
+    if (!check(Token::TOK_INT_LIT)) {
+      error_function();
+    }
+    ast->children.push_back(parse_int_lit());
+    consume(Token::TOK_GREATER);
+  } else if (match(Token::TOK_MATRIX)) {
+    ast->v = TypeNode::MATRIX;
+    consume(Token::TOK_LESS);
+    ast->children.push_back(parse_base_type());
+    consume(Token::TOK_COMMA);
+    ast->children.push_back(parse_int_lit());
+    consume(Token::TOK_COMMA);
+    ast->children.push_back(parse_int_lit());
+    consume(Token::TOK_GREATER);
+  } else if (match(Token::TOK_TENSOR)) {
+    ast->v = TypeNode::TENSOR;
+    consume(Token::TOK_LESS);
+    ast->children.push_back(parse_base_type());
+    consume(Token::TOK_COMMA);
+    ast->children.push_back(parse_int_lit());
+    while (match(Token::TOK_COMMA)) {
+      ast->children.push_back(parse_int_lit());
+    }
+    consume(Token::TOK_GREATER);
+  } else {
+    ast = parse_base_type();
+  }
+  return ast;
+}
+inline std::unique_ptr<AST> Parser::parse_base_type() {
+  auto ast = std::make_unique<AST>();
+  ast->node = Node::TYPE;
   if (match(Token::TOK_INT)) {
     ast->v = TypeNode::INT;
   } else if (match(Token::TOK_FLOAT)) {
     ast->v = TypeNode::FLOAT;
   } else if (match(Token::TOK_BOOL)) {
     ast->v = TypeNode::BOOL;
-  } else if (match(Token::TOK_MATRIX)) {
-    ast->v = TypeNode::MATRIX;
-  } else if (match(Token::TOK_VECTOR)) {
-    ast->v = TypeNode::VECTOR;
   } else {
     error_function();
   }
+  return ast;
+}
+inline std::unique_ptr<AST> Parser::parse_int_lit() {
+  if (!check(Token::TOK_INT_LIT)) {
+    error_function();
+  }
+  auto ast = std::make_unique<AST>();
+  ast->node = Node::INT_LIT;
+  ast->v = std::stoll(peek().s);
+  advance();
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_expr() { return parse_assign_expr(); }
@@ -371,11 +417,13 @@ inline std::unique_ptr<AST> Parser::parse_primary_expr() {
     ast = parse_expr();
     consume(Token::TOK_RPAREN);
   } else if (match(Token::TOK_LBRACKET)) {
-    ast->node = Node::VECTOR_LIT;
+    ast->node = Node::TENSOR_LIT;
     if (!match(Token::TOK_RBRACKET)) {
       fill_expr_list(ast);
       consume(Token::TOK_RBRACKET);
     }
+  } else {
+    error_function();
   }
   return ast;
 }

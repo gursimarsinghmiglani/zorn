@@ -65,6 +65,7 @@ struct Parser {
   std::unique_ptr<AST> parse_return_stmt();
   std::unique_ptr<AST> parse_print_stmt();
   std::unique_ptr<AST> parse_expr_stmt();
+  std::unique_ptr<AST> parse_extern_stmt();
 };
 inline std::unique_ptr<AST> Parser::parse_program() {
   auto ast = std::make_unique<AST>();
@@ -583,4 +584,21 @@ inline std::unique_ptr<AST> Parser::parse_expr_stmt() {
   ast->children.push_back(parse_expr());
   consume(Token::TOK_SEMI);
   return ast;
+}
+inline std::unique_ptr<AST> Parser::parse_extern_stmt() {
+    auto ast = std::make_unique<AST>();
+    ast->node = Node::EXTERN_DECL;
+    consume(Token::TOK_EXTERN);
+    consume(Token::TOK_FN);
+    ast->children.push_back(parse_id());
+    consume(Token::TOK_LPAREN);
+    if (!match(Token::TOK_RPAREN)) {
+        fill_param_list(ast);
+        consume(Token::TOK_RPAREN);
+    }
+    if (match(Token::TOK_ARROW)) {
+        ast->children.push_back(parse_type());
+    }
+    consume(Token::TOK_SEMI);
+    return ast;
 }

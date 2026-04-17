@@ -4,6 +4,7 @@ enum class Node {
   GLOBAL_DECL,
   CONST_DECL,
   FUNCTION_DECL,
+  EXTERN_DECL,
   PARAM,
   BLOCK,
   VAR_DECL,

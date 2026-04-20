@@ -1,0 +1,8 @@
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/intrinsics_gen.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/vt_gen.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/omp_gen.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/acc_gen.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/target_parser_gen.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/BallPythonCompiler.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/edit_cache.dir
+/Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/rebuild_cache.dir

@@ -147,7 +147,5 @@ inline DFA regex_to_dfa(const std::vector<std::string> &regexes,
     }
     nfa = nfa.union_nfa(nfa_current);
   }
-  DFA dfa = nfa.to_dfa();
-  DFA dfa_m = dfa.minimize();
   return nfa.to_dfa().minimize();
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include "../lexer/lexeme.hpp"
 #include "ast.hpp"
 #include <iostream>
 struct Parser {
@@ -36,7 +35,6 @@ struct Parser {
   std::unique_ptr<AST> parse_type();
   std::unique_ptr<AST> parse_base_type();
   std::unique_ptr<AST> parse_int_lit();
-  std::unique_ptr<AST> parse_int_list();
   std::unique_ptr<AST> parse_expr();
   std::unique_ptr<AST> parse_assign_expr();
   std::unique_ptr<AST> parse_range_expr();
@@ -65,7 +63,7 @@ struct Parser {
   std::unique_ptr<AST> parse_return_stmt();
   std::unique_ptr<AST> parse_print_stmt();
   std::unique_ptr<AST> parse_expr_stmt();
-  std::unique_ptr<AST> parse_extern_stmt();
+  std::unique_ptr<AST> parse_extern_fn_decl();
 };
 inline std::unique_ptr<AST> Parser::parse_program() {
   auto ast = std::make_unique<AST>();
@@ -106,6 +104,7 @@ inline std::unique_ptr<AST> Parser::parse_id() {
   auto ast = std::make_unique<AST>();
   ast->node = Node::ID;
   ast->v = t.s;
+  ast->lexeme = t;
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_type() {
@@ -585,20 +584,20 @@ inline std::unique_ptr<AST> Parser::parse_expr_stmt() {
   consume(Token::TOK_SEMI);
   return ast;
 }
-inline std::unique_ptr<AST> Parser::parse_extern_stmt() {
-    auto ast = std::make_unique<AST>();
-    ast->node = Node::EXTERN_DECL;
-    consume(Token::TOK_EXTERN);
-    consume(Token::TOK_FN);
-    ast->children.push_back(parse_id());
-    consume(Token::TOK_LPAREN);
-    if (!match(Token::TOK_RPAREN)) {
-        fill_param_list(ast);
-        consume(Token::TOK_RPAREN);
-    }
-    if (match(Token::TOK_ARROW)) {
-        ast->children.push_back(parse_type());
-    }
-    consume(Token::TOK_SEMI);
-    return ast;
+inline std::unique_ptr<AST> Parser::parse_extern_fn_decl() {
+  auto ast = std::make_unique<AST>();
+  ast->node = Node::EXTERN_DECL;
+  consume(Token::TOK_EXTERN);
+  consume(Token::TOK_FN);
+  ast->children.push_back(parse_id());
+  consume(Token::TOK_LPAREN);
+  if (!match(Token::TOK_RPAREN)) {
+    fill_param_list(ast);
+    consume(Token::TOK_RPAREN);
+  }
+  if (match(Token::TOK_ARROW)) {
+    ast->children.push_back(parse_type());
+  }
+  consume(Token::TOK_SEMI);
+  return ast;
 }

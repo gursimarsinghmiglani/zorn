@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/gursimarsinghmiglani/ball-python/src -I/Users/gursimarsinghmiglani/ball-python/include -isystem /opt/homebrew/Cellar/llvm/22.1.3/include -isystem /opt/homebrew/include
+CXX_INCLUDES = -I/Users/gursimarsinghmiglani/zorn/src -I/Users/gursimarsinghmiglani/zorn/include -isystem /opt/homebrew/Cellar/llvm/22.1.3/include -isystem /opt/homebrew/include
 
 CXX_FLAGSarm64 = -std=c++17 -arch arm64   -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
 

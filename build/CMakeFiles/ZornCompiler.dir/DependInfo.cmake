@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/gursimarsinghmiglani/ball-python/src/main.cpp" "CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o" "gcc" "CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o.d"
+  "/Users/gursimarsinghmiglani/zorn/src/main.cpp" "CMakeFiles/ZornCompiler.dir/src/main.cpp.o" "gcc" "CMakeFiles/ZornCompiler.dir/src/main.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

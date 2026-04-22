@@ -1,11 +1,11 @@
 program ::= { declaration } EOF
 
-declaration ::= global_decl 
+declaration ::= var_decl 
               | const_decl 
               | function_decl
               | extern_fn_decl
 
-global_decl ::= GLOBAL ID ( COLON type [ ASSIGN expr ] | ASSIGN expr ) SEMI
+var_decl ::= LET ID ( COLON type [ ASSIGN expr ] | ASSIGN expr ) SEMI
 const_decl ::= CONST ID [ COLON type ] ASSIGN expr SEMI
 function_decl ::= FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] LBRACE block RBRACE
 extern_decl ::= EXTERN FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] SEMI
@@ -16,6 +16,7 @@ param ::= ID COLON type
 block ::= { statement }
 
 statement ::= var_decl
+            | const_decl
             | if_stmt
             | while_stmt
             | for_stmt

@@ -5,7 +5,6 @@
   X(TOK_RETURN)                                                                \
   X(TOK_PRINT)                                                                 \
   X(TOK_PRINTLN)                                                               \
-  X(TOK_GLOBAL)                                                                \
   X(TOK_CONST)                                                                 \
   X(TOK_EXTERN)                                                                \
   X(TOK_TENSOR)                                                                \

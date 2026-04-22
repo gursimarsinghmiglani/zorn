@@ -53,10 +53,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/gursimarsinghmiglani/ball-python
+CMAKE_SOURCE_DIR = /Users/gursimarsinghmiglani/zorn
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/gursimarsinghmiglani/ball-python/build
+CMAKE_BINARY_DIR = /Users/gursimarsinghmiglani/zorn/build
 
 # Utility rule file for vt_gen.
 
@@ -81,6 +81,6 @@ CMakeFiles/vt_gen.dir/clean:
 .PHONY : CMakeFiles/vt_gen.dir/clean
 
 CMakeFiles/vt_gen.dir/depend:
-	cd /Users/gursimarsinghmiglani/ball-python/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/gursimarsinghmiglani/ball-python /Users/gursimarsinghmiglani/ball-python /Users/gursimarsinghmiglani/ball-python/build /Users/gursimarsinghmiglani/ball-python/build /Users/gursimarsinghmiglani/ball-python/build/CMakeFiles/vt_gen.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/gursimarsinghmiglani/zorn/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/gursimarsinghmiglani/zorn /Users/gursimarsinghmiglani/zorn /Users/gursimarsinghmiglani/zorn/build /Users/gursimarsinghmiglani/zorn/build /Users/gursimarsinghmiglani/zorn/build/CMakeFiles/vt_gen.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/vt_gen.dir/depend
 

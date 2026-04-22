@@ -1,8 +1,8 @@
-CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o: \
-  /Users/gursimarsinghmiglani/ball-python/src/main.cpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/lexer.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/lexeme.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/token.hpp \
+CMakeFiles/ZornCompiler.dir/src/main.cpp.o: \
+  /Users/gursimarsinghmiglani/zorn/src/main.cpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/lexer.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/lexeme.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/token.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \
@@ -661,11 +661,11 @@ CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/sample.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/bit \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/regex_to_nfa.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/nfa.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/dfa.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/automata_config.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/dsu.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/regex_to_nfa.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/nfa.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/dfa.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/automata_config.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/dsu.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/vector \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__vector/comparison.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/lexicographical_compare_three_way.h \
@@ -758,7 +758,7 @@ CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_fsfilcnt_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_types/_nl_item.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/cstdarg \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/token_priority.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/token_priority.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/stack \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/stack.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/deque.h \
@@ -787,7 +787,7 @@ CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/default_searcher.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/not_fn.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/perfect_forward.h \
-  /Users/gursimarsinghmiglani/ball-python/include/lexer/set_hash.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/lexer/set_hash.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/unordered_set \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/istream \
@@ -801,14 +801,14 @@ CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o: \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__fwd/queue.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/print \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/recursive_descent.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/ast.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/binary_op_node.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/node.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/postfix_op_node.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/print_node.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/type.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/type_node.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/parser/unary_op_node.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/semantic_analyzer/semantic_analyzer.hpp \
-  /Users/gursimarsinghmiglani/ball-python/include/semantic_analyzer/symbol_table.hpp
+  /Users/gursimarsinghmiglani/zorn/include/parser/recursive_descent.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/ast.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/binary_op_node.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/node.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/postfix_op_node.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/print_node.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/type.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/type_node.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/parser/unary_op_node.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/semantic_analyzer/semantic_analyzer.hpp \
+  /Users/gursimarsinghmiglani/zorn/include/semantic_analyzer/symbol_table.hpp

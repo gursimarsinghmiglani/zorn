@@ -2,13 +2,16 @@
 #include "parser/ast.hpp"
 #include "parser/type.hpp"
 #include "symbol_table.hpp"
+#include <iostream>
 struct SemanticAnalyzer {
   std::unique_ptr<SymbolTable> st;
   std::optional<TypeNode> curr_func_ret_type;
   SemanticAnalyzer(AST *const root) { visit_program(root); }
   void visit_program(AST *const node);
   void visit_decl(AST *const node);
-  void visit_global_decl(AST *const node);
+  static Type type_unify(const Type& type_left, const Type& type_right);
+  static Type base_type_node_unify(TypeNode left, TypeNode right);
+  static Type container_type_unify(const Type& left, const Type& right);
   void visit_id(AST *const node);
   void visit_type(AST *const node);
   void visit_expr(AST *const node);
@@ -65,25 +68,72 @@ inline void SemanticAnalyzer::visit_decl(AST *const node) {
 inline void SemanticAnalyzer::visit_global_decl(AST *const node) {
   std::string id = std::get<std::string>(node->children[0]->v);
   Type type_left;
-  type_left.is_null = true;
-  if (std::holds_alternative<TypeNode>(node->children[1]->v)) {
-    type_left.is_null = false;
-    type_left.type_node = std::get<TypeNode>(node->children[1]->v);
-    switch (type_left.type_node) {
+  if (node->children[1]->node == Node::TYPE) {
+    visit_type(node->children[1].get());
+    type_left = node->children[1]->type;
+    visit_expr(node->children[2].get());
+    Type type_right = node->children[2]->type;
+    type_left = type_unify(type_left, type_right);
+  } else {
+    visit_expr(node->children[1].get());
+    type_left = node->children[1]->type;
+  }
+  if (type_left.is_null) {
+    std::cerr << "Type error in line " << node->lexeme.value().line_number << "\n";
+    exit(1);
+  }
+  node->type = type_left;
+}
+inline void SemanticAnalyzer::visit_const_decl(AST *node) {
+  std::string id = std::get<std::string>(node->children[0]->v);
+
+}
+inline Type SemanticAnalyzer::type_unify(const Type& type_left, const Type& type_right) {
+  switch (type_left.type_node) {
+    case TypeNode::INT:
+    case TypeNode::FLOAT:
+    case TypeNode::BOOL:
+      return base_type_node_unify(type_left.type_node, type_right.type_node);
     case TypeNode::VECTOR:
     case TypeNode::MATRIX:
-    case TypeNode::TENSOR: {
-      type_left.base_type = std::get<TypeNode>(node->children[2]->v);
-      for (int i = 3; i < node->children.size(); i++) {
-        if (std::holds_alternative<long long>(node->children[i]->v)) {
-          type_left.sizes.push_back(std::get<long long>(node->children[i]->v));
-        } else {
-          break;
-        }
-      }
-    } break;
+    case TypeNode::TENSOR:
+      return container_type_unify(type_left, type_right);
     default:
-      break;
-    }
+      return Type::error();
+  }
+}
+inline Type SemanticAnalyzer::base_type_node_unify(TypeNode left, TypeNode right) {
+  switch (left) {
+    case TypeNode::INT:
+    case TypeNode::FLOAT:
+    case TypeNode::BOOL:
+      switch (right) {
+        case TypeNode::INT:
+        case TypeNode::FLOAT:
+        case TypeNode::BOOL:
+          return Type::from_type_node(left);
+        default:
+          return Type::error();
+      }
+    default:
+      return Type::error();
+  }
+}
+inline Type SemanticAnalyzer::container_type_unify(const Type& left, const Type& right) {
+  switch (right.type_node) {
+    case TypeNode::INT:
+    case TypeNode::BOOL:
+    case TypeNode::FLOAT:
+    case TypeNode::VOID:
+      return Type::error();
+    default:
+      if (left.sizes != right.sizes) {
+        return Type::error();
+      }
+      TypeNode base_type = base_type_node_unify(left.base_type.value(), right.base_type.value()).type_node;
+      Type t = Type::from_type_node(left.type_node);
+      t.base_type = base_type;
+      t.sizes = left.sizes;
+      return t;
   }
 }

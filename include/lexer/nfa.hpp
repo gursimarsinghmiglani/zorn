@@ -110,7 +110,6 @@ struct NFA {
     std::unordered_set<int> worklist;
     for (int i = 0; i < num_states; i++) {
       worklist.insert(i);
-      ;
     }
     while (!worklist.empty()) {
       int n = *worklist.begin();

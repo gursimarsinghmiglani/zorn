@@ -1,7 +1,6 @@
 #pragma once
 #include "parser/type_node.hpp"
 #include <iostream>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -33,7 +32,7 @@ struct SymbolTable {
   void enter_scope();
   void exit_scope();
   bool declare(const std::string &name, SymbolInfo info);
-  std::optional<SymbolInfo> lookup(const std::string &name);
+  SymbolInfo *lookup(const std::string &name);
 };
 inline void SymbolTable::enter_scope() { scopes.emplace_back(); }
 inline void SymbolTable::exit_scope() {
@@ -51,12 +50,12 @@ inline bool SymbolTable::declare(const std::string &name, SymbolInfo info) {
   current_scope[name] = info;
   return true;
 }
-inline std::optional<SymbolInfo> SymbolTable::lookup(const std::string &name) {
+inline SymbolInfo *SymbolTable::lookup(const std::string &name) {
   for (auto it = scopes.rbegin(); it != scopes.rend(); it++) {
     auto found = it->find(name);
     if (found != it->end()) {
-      return found->second;
+      return &found->second;
     }
   }
-  return std::nullopt;
+  return nullptr;
 }

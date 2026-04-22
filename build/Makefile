@@ -57,10 +57,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/gursimarsinghmiglani/ball-python
+CMAKE_SOURCE_DIR = /Users/gursimarsinghmiglani/zorn
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/gursimarsinghmiglani/ball-python/build
+CMAKE_BINARY_DIR = /Users/gursimarsinghmiglani/zorn/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gursimarsinghmiglani/ball-python/build/CMakeFiles /Users/gursimarsinghmiglani/ball-python/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gursimarsinghmiglani/zorn/build/CMakeFiles /Users/gursimarsinghmiglani/zorn/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gursimarsinghmiglani/ball-python/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/gursimarsinghmiglani/zorn/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -182,24 +182,24 @@ target_parser_gen/fast:
 .PHONY : target_parser_gen/fast
 
 #=============================================================================
-# Target rules for targets named BallPythonCompiler
+# Target rules for targets named ZornCompiler
 
 # Build rule for target.
-BallPythonCompiler: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BallPythonCompiler
-.PHONY : BallPythonCompiler
+ZornCompiler: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ZornCompiler
+.PHONY : ZornCompiler
 
 # fast build rule for target.
-BallPythonCompiler/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BallPythonCompiler.dir/build.make CMakeFiles/BallPythonCompiler.dir/build
-.PHONY : BallPythonCompiler/fast
+ZornCompiler/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ZornCompiler.dir/build.make CMakeFiles/ZornCompiler.dir/build
+.PHONY : ZornCompiler/fast
 
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BallPythonCompiler.dir/build.make CMakeFiles/BallPythonCompiler.dir/src/main.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ZornCompiler.dir/build.make CMakeFiles/ZornCompiler.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -207,7 +207,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BallPythonCompiler.dir/build.make CMakeFiles/BallPythonCompiler.dir/src/main.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ZornCompiler.dir/build.make CMakeFiles/ZornCompiler.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -215,7 +215,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/BallPythonCompiler.dir/build.make CMakeFiles/BallPythonCompiler.dir/src/main.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ZornCompiler.dir/build.make CMakeFiles/ZornCompiler.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 # Help Target
@@ -231,7 +231,7 @@ help:
 	@echo "... omp_gen"
 	@echo "... target_parser_gen"
 	@echo "... vt_gen"
-	@echo "... BallPythonCompiler"
+	@echo "... ZornCompiler"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

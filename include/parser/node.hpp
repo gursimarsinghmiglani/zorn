@@ -1,7 +1,6 @@
 #pragma once
 enum class Node {
   PROGRAM,
-  GLOBAL_DECL,
   CONST_DECL,
   FUNCTION_DECL,
   EXTERN_DECL,

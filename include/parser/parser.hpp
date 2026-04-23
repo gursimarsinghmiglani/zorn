@@ -30,7 +30,6 @@ struct Parser {
   }
   bool is_eof() const { return tok() == Token::TOK_EOF; }
   std::unique_ptr<AST> parse_program();
-  std::unique_ptr<AST> parse_global_decl();
   std::unique_ptr<AST> parse_id();
   std::unique_ptr<AST> parse_type();
   std::unique_ptr<AST> parse_base_type();
@@ -69,8 +68,8 @@ inline std::unique_ptr<AST> Parser::parse_program() {
   auto ast = std::make_unique<AST>();
   ast->node = Node::PROGRAM;
   while (!is_eof()) {
-    if (check(Token::TOK_GLOBAL)) {
-      ast->children.push_back(parse_global_decl());
+    if (check(Token::TOK_LET)) {
+      ast->children.push_back(parse_var_decl());
     } else if (check(Token::TOK_CONST)) {
       ast->children.push_back(parse_const_decl());
     } else if (check(Token::TOK_FN)) {
@@ -79,23 +78,6 @@ inline std::unique_ptr<AST> Parser::parse_program() {
       error_function();
     }
   }
-  return ast;
-}
-inline std::unique_ptr<AST> Parser::parse_global_decl() {
-  consume(Token::TOK_GLOBAL);
-  auto ast = std::make_unique<AST>();
-  ast->node = Node::GLOBAL_DECL;
-  ast->children.push_back(parse_id());
-  if (match(Token::TOK_COLON)) {
-    ast->children.push_back(parse_type());
-    if (match(Token::TOK_ASSIGN)) {
-      ast->children.push_back(parse_expr());
-    }
-  } else if (match(Token::TOK_ASSIGN)) {
-    ast->children.push_back(parse_expr());
-  } else
-    error_function();
-  consume(Token::TOK_SEMI);
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_id() {
@@ -484,6 +466,8 @@ inline std::unique_ptr<AST> Parser::parse_block() {
   while (!check(Token::TOK_RBRACE)) {
     if (check(Token::TOK_LET)) {
       ast->children.push_back(parse_var_decl());
+    } else if (check(Token::TOK_CONST)) {
+      ast->children.push_back(parse_const_decl());
     } else if (check(Token::TOK_IF)) {
       ast->children.push_back(parse_if_stmt());
     } else if (check(Token::TOK_WHILE)) {

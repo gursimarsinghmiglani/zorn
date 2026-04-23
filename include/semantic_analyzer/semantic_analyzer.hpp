@@ -9,6 +9,7 @@ struct SemanticAnalyzer {
   SemanticAnalyzer(AST *const root) { visit_program(root); }
   void visit_program(AST *const node);
   void visit_decl(AST *const node);
+  void visit_var_decl(AST *const node);
   static Type type_unify(const Type& type_left, const Type& type_right);
   static Type base_type_node_unify(TypeNode left, TypeNode right);
   static Type container_type_unify(const Type& left, const Type& right);
@@ -49,8 +50,8 @@ inline void SemanticAnalyzer::visit_program(AST *const node) {
 }
 inline void SemanticAnalyzer::visit_decl(AST *const node) {
   switch (node->node) {
-  case Node::GLOBAL_DECL:
-    visit_global_decl(node);
+  case Node::VAR_DECL:
+    visit_var_decl(node);
     break;
   case Node::CONST_DECL:
     visit_const_decl(node);
@@ -65,28 +66,15 @@ inline void SemanticAnalyzer::visit_decl(AST *const node) {
     break;
   }
 }
-inline void SemanticAnalyzer::visit_global_decl(AST *const node) {
-  std::string id = std::get<std::string>(node->children[0]->v);
-  Type type_left;
+inline void SemanticAnalyzer::visit_var_decl(AST *const node) {
+  SymbolInfo sym_info;
+  string id = std::get<std::string>(node->children[0]->v);
+  Type type;
   if (node->children[1]->node == Node::TYPE) {
-    visit_type(node->children[1].get());
-    type_left = node->children[1]->type;
-    visit_expr(node->children[2].get());
-    Type type_right = node->children[2]->type;
-    type_left = type_unify(type_left, type_right);
-  } else {
-    visit_expr(node->children[1].get());
-    type_left = node->children[1]->type;
-  }
-  if (type_left.is_null) {
-    std::cerr << "Type error in line " << node->lexeme.value().line_number << "\n";
-    exit(1);
-  }
-  node->type = type_left;
+    Type type_left = node->children[1]->
 }
 inline void SemanticAnalyzer::visit_const_decl(AST *node) {
   std::string id = std::get<std::string>(node->children[0]->v);
-
 }
 inline Type SemanticAnalyzer::type_unify(const Type& type_left, const Type& type_right) {
   switch (type_left.type_node) {

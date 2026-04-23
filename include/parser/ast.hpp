@@ -6,13 +6,9 @@
 #include "print_node.hpp"
 #include "type.hpp"
 #include "unary_op_node.hpp"
-#include <optional>
-#include <string>
-#include <variant>
-#include <vector>
 struct AST {
   Node node;
-  std::variant<long long, double, bool, std::string, BinaryOpNode,
+  std::variant<int64_t, double, bool, std::string, BinaryOpNode,
                PostfixOpNode, TypeNode, UnaryOpNode, PrintNode>
       v;
   std::vector<std::unique_ptr<AST>> children;

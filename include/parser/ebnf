@@ -8,7 +8,7 @@ declaration ::= var_decl
 var_decl ::= LET ID ( COLON type [ ASSIGN expr ] | ASSIGN expr ) SEMI
 const_decl ::= CONST ID [ COLON type ] ASSIGN expr SEMI
 function_decl ::= FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] LBRACE block RBRACE
-extern_decl ::= EXTERN FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] SEMI
+extern_fn_decl ::= EXTERN FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] SEMI
 
 param_list ::= param { COMMA param }
 param ::= ID COLON type

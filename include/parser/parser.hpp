@@ -2,9 +2,9 @@
 #include "ast.hpp"
 #include <iostream>
 struct Parser {
-  std::vector<Lexeme> &lexemes;
+  const std::vector<Lexeme> &lexemes;
   size_t pos;
-  Parser(std::vector<Lexeme> &lexemes) : lexemes(lexemes), pos(0) {}
+  Parser(const std::vector<Lexeme> &lexemes) : lexemes(lexemes), pos(0) {}
   const Lexeme &peek() const { return lexemes[pos]; }
   void advance() { pos++; }
   Token tok() const { return peek().tok; }
@@ -74,6 +74,8 @@ inline std::unique_ptr<AST> Parser::parse_program() {
       ast->children.push_back(parse_const_decl());
     } else if (check(Token::TOK_FN)) {
       ast->children.push_back(parse_function_decl());
+    } else if (check(Token::TOK_EXTERN)) {
+      ast->children.push_back(parse_extern_fn_decl());
     } else {
       error_function();
     }
@@ -95,31 +97,43 @@ inline std::unique_ptr<AST> Parser::parse_type() {
   if (match(Token::TOK_VECTOR)) {
     ast->v = TypeNode::VECTOR;
     consume(Token::TOK_LESS);
-    ast->children.push_back(parse_base_type());
+    auto base_type = parse_base_type()->type;
     consume(Token::TOK_COMMA);
-    if (!check(Token::TOK_INT_LIT)) {
-      error_function();
-    }
-    ast->children.push_back(parse_int_lit());
+    std::vector<int64_t> sizes;
+    sizes.push_back(std::get<int64_t>(parse_int_lit()->v));
+    auto t = Type::from_type_node(std::get<TypeNode>(ast->v));
+    t.base_type = base_type.type_node;
+    t.sizes = sizes;
+    ast->type = t;
     consume(Token::TOK_GREATER);
   } else if (match(Token::TOK_MATRIX)) {
     ast->v = TypeNode::MATRIX;
     consume(Token::TOK_LESS);
-    ast->children.push_back(parse_base_type());
+    auto base_type = parse_base_type()->type;
     consume(Token::TOK_COMMA);
-    ast->children.push_back(parse_int_lit());
+    std::vector<int64_t> sizes;
+    sizes.push_back(std::get<int64_t>(parse_int_lit()->v));
     consume(Token::TOK_COMMA);
-    ast->children.push_back(parse_int_lit());
+    sizes.push_back(std::get<int64_t>(parse_int_lit()->v));
+    auto t = Type::from_type_node(std::get<TypeNode>(ast->v));
+    t.base_type = base_type.type_node;
+    t.sizes = sizes;
+    ast->type = t;
     consume(Token::TOK_GREATER);
   } else if (match(Token::TOK_TENSOR)) {
     ast->v = TypeNode::TENSOR;
     consume(Token::TOK_LESS);
-    ast->children.push_back(parse_base_type());
+    auto base_type = parse_base_type()->type;
     consume(Token::TOK_COMMA);
-    ast->children.push_back(parse_int_lit());
+    std::vector<int64_t> sizes;
+    sizes.push_back(std::get<int64_t>(parse_int_lit()->v));
     while (match(Token::TOK_COMMA)) {
-      ast->children.push_back(parse_int_lit());
+      sizes.push_back(std::get<int64_t>(parse_int_lit()->v));
     }
+    auto t = Type::from_type_node(std::get<TypeNode>(ast->v));
+    t.base_type = base_type.type_node;
+    t.sizes = sizes;
+    ast->type = t;
     consume(Token::TOK_GREATER);
   } else {
     ast = parse_base_type();
@@ -131,10 +145,13 @@ inline std::unique_ptr<AST> Parser::parse_base_type() {
   ast->node = Node::TYPE;
   if (match(Token::TOK_INT)) {
     ast->v = TypeNode::INT;
+    ast->type = Type::from_type_node(std::get<TypeNode>(ast->v));
   } else if (match(Token::TOK_FLOAT)) {
     ast->v = TypeNode::FLOAT;
+    ast->type = Type::from_type_node(std::get<TypeNode>(ast->v));
   } else if (match(Token::TOK_BOOL)) {
     ast->v = TypeNode::BOOL;
+    ast->type = Type::from_type_node(std::get<TypeNode>(ast->v));
   } else {
     error_function();
   }
@@ -147,6 +164,7 @@ inline std::unique_ptr<AST> Parser::parse_int_lit() {
   auto ast = std::make_unique<AST>();
   ast->node = Node::INT_LIT;
   ast->v = std::stoll(peek().s);
+  ast->lexeme = peek();
   advance();
   return ast;
 }

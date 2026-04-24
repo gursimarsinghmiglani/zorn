@@ -13,5 +13,5 @@ struct AST {
       v;
   std::vector<std::unique_ptr<AST>> children;
   Type type;
-  std::optional<Lexeme> lexeme;
+  Lexeme lexeme;
 };

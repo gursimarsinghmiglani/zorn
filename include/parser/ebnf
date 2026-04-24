@@ -7,13 +7,13 @@ declaration ::= var_decl
 
 var_decl ::= LET ID ( COLON type [ ASSIGN expr ] | ASSIGN expr ) SEMI
 const_decl ::= CONST ID [ COLON type ] ASSIGN expr SEMI
-function_decl ::= FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] LBRACE block RBRACE
+function_decl ::= FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] block
 extern_fn_decl ::= EXTERN FN ID LPAREN [ param_list ] RPAREN [ ARROW type ] SEMI
 
 param_list ::= param { COMMA param }
 param ::= ID COLON type
 
-block ::= { statement }
+block ::= LBRACE { statement } RBRACE
 
 statement ::= var_decl
             | const_decl
@@ -23,14 +23,15 @@ statement ::= var_decl
             | return_stmt
             | print_stmt
             | expr_stmt
+            | block
 
 var_decl ::= LET ID ( COLON type [ ASSIGN expr ] | ASSIGN expr ) SEMI
 
-if_stmt ::= IF expr LBRACE block RBRACE [ ELSE LBRACE block RBRACE ]
+if_stmt ::= IF expr block [ ELSE block ]
 
-while_stmt ::= WHILE expr LBRACE block RBRACE
+while_stmt ::= WHILE expr block
 
-for_stmt ::= FOR ID IN expr LBRACE block RBRACE
+for_stmt ::= FOR ID IN expr block
 
 return_stmt ::= RETURN [ expr ] SEMI
 

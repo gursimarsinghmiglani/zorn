@@ -1,4 +1,4 @@
-#pragma once
+#pragma onc
 #include "ast.hpp"
 #include <iostream>
 struct Parser {
@@ -66,6 +66,7 @@ struct Parser {
 };
 inline std::unique_ptr<AST> Parser::parse_program() {
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   ast->node = Node::PROGRAM;
   while (!is_eof()) {
     if (check(Token::TOK_LET)) {
@@ -83,16 +84,16 @@ inline std::unique_ptr<AST> Parser::parse_program() {
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_id() {
-  auto &t = peek();
-  consume(Token::TOK_ID);
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  consume(Token::TOK_ID);
   ast->node = Node::ID;
-  ast->v = t.s;
-  ast->lexeme = t;
+  ast->v = ast->lexeme.s;
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_type() {
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   ast->node = Node::TYPE;
   if (match(Token::TOK_VECTOR)) {
     ast->v = TypeNode::VECTOR;
@@ -142,6 +143,7 @@ inline std::unique_ptr<AST> Parser::parse_type() {
 }
 inline std::unique_ptr<AST> Parser::parse_base_type() {
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   ast->node = Node::TYPE;
   if (match(Token::TOK_INT)) {
     ast->v = TypeNode::INT;
@@ -162,27 +164,32 @@ inline std::unique_ptr<AST> Parser::parse_int_lit() {
     error_function();
   }
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   ast->node = Node::INT_LIT;
   ast->v = std::stoll(peek().s);
-  ast->lexeme = peek();
   advance();
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_expr() { return parse_assign_expr(); }
 inline std::unique_ptr<AST> Parser::parse_assign_expr() {
   auto left = parse_range_expr();
-  if (match(Token::TOK_ASSIGN)) {
+  if (check(Token::TOK_ASSIGN)) {
+    auto lex = peek();
+    advance();
     auto right = parse_assign_expr();
     auto ast = std::make_unique<AST>();
     ast->node = Node::ASSIGN;
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
+    ast->lexeme = lex;
     return ast;
   }
   return left;
 }
 inline std::unique_ptr<AST> Parser::parse_range_expr() {
-  if (match(Token::TOK_RANGE)) {
+  if (check(Token::TOK_RANGE)) {
+    auto lex = peek();
+    advance();
     auto ast = std::make_unique<AST>();
     ast->node = Node::RANGE;
     consume(Token::TOK_LPAREN);
@@ -193,13 +200,16 @@ inline std::unique_ptr<AST> Parser::parse_range_expr() {
       ast->children.push_back(parse_expr());
     }
     consume(Token::TOK_RPAREN);
+    ast->lexeme = lex;
     return ast;
   }
   return parse_logical_or_expr();
 }
 inline std::unique_ptr<AST> Parser::parse_logical_or_expr() {
   auto left = parse_logical_and_expr();
-  while (match(Token::TOK_OR)) {
+  while (check(Token::TOK_OR)) {
+    auto lex = peek();
+    advance();
     auto right = parse_logical_and_expr();
     auto ast = std::make_unique<AST>();
     ast->node = Node::BINARY_OP;
@@ -207,12 +217,15 @@ inline std::unique_ptr<AST> Parser::parse_logical_or_expr() {
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
     left = std::move(ast);
+    left->lexeme = lex;
   }
   return left;
 }
 inline std::unique_ptr<AST> Parser::parse_logical_and_expr() {
   auto left = parse_bitwise_or_expr();
-  while (match(Token::TOK_AND)) {
+  while (check(Token::TOK_AND)) {
+    auto lex = peek();
+    advance();
     auto right = parse_bitwise_or_expr();
     auto ast = std::make_unique<AST>();
     ast->node = Node::BINARY_OP;
@@ -220,12 +233,15 @@ inline std::unique_ptr<AST> Parser::parse_logical_and_expr() {
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
     left = std::move(ast);
+    left->lexeme = lex;
   }
   return left;
 }
 inline std::unique_ptr<AST> Parser::parse_bitwise_or_expr() {
   auto left = parse_bitwise_xor_expr();
-  while (match(Token::TOK_BITWISE_OR)) {
+  while (check(Token::TOK_BITWISE_OR)) {
+    auto lex = peek();
+    advance();
     auto right = parse_bitwise_xor_expr();
     auto ast = std::make_unique<AST>();
     ast->node = Node::BINARY_OP;
@@ -233,12 +249,15 @@ inline std::unique_ptr<AST> Parser::parse_bitwise_or_expr() {
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
     left = std::move(ast);
+    left->lexeme = lex;
   }
   return left;
 }
 inline std::unique_ptr<AST> Parser::parse_bitwise_xor_expr() {
   auto left = parse_bitwise_and_expr();
-  while (match(Token::TOK_BITWISE_XOR)) {
+  while (check(Token::TOK_BITWISE_XOR)) {
+    auto lex = peek();
+    advance();
     auto right = parse_bitwise_and_expr();
     auto ast = std::make_unique<AST>();
     ast->node = Node::BINARY_OP;
@@ -246,12 +265,15 @@ inline std::unique_ptr<AST> Parser::parse_bitwise_xor_expr() {
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
     left = std::move(ast);
+    left->lexeme = lex;
   }
   return left;
 }
 inline std::unique_ptr<AST> Parser::parse_bitwise_and_expr() {
   auto left = parse_equality_expr();
-  while (match(Token::TOK_BITWISE_AND)) {
+  while (check(Token::TOK_BITWISE_AND)) {
+    auto lex = peek();
+    advance();
     auto right = parse_equality_expr();
     auto ast = std::make_unique<AST>();
     ast->node = Node::BINARY_OP;
@@ -259,12 +281,15 @@ inline std::unique_ptr<AST> Parser::parse_bitwise_and_expr() {
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
     left = std::move(ast);
+    left->lexeme = lex;
   }
   return left;
 }
 inline std::unique_ptr<AST> Parser::parse_equality_expr() {
   auto left = parse_relational_expr();
   while (check(Token::TOK_EQ) || check(Token::TOK_NEQ)) {
+    auto lex = peek();
+    advance();
     auto ast = std::make_unique<AST>();
     if (match(Token::TOK_EQ)) {
       ast->v = BinaryOpNode::EQ;
@@ -276,6 +301,7 @@ inline std::unique_ptr<AST> Parser::parse_equality_expr() {
     ast->children.push_back(std::move(left));
     ast->children.push_back(std::move(right));
     left = std::move(ast);
+    left->lexeme = lex;
   }
   return left;
 }
@@ -283,14 +309,22 @@ inline std::unique_ptr<AST> Parser::parse_relational_expr() {
   auto left = parse_additive_expr();
   while (1) {
     auto ast = std::make_unique<AST>();
-    if (match(Token::TOK_LESS)) {
+    if (check(Token::TOK_LESS)) {
       ast->v = BinaryOpNode::LESS;
-    } else if (match(Token::TOK_LEQ)) {
+      ast->lexeme = peek();
+      advance();
+    } else if (check(Token::TOK_LEQ)) {
       ast->v = BinaryOpNode::LEQ;
-    } else if (match(Token::TOK_GREATER)) {
+      ast->lexeme = peek();
+      advance();
+    } else if (check(Token::TOK_GREATER)) {
       ast->v = BinaryOpNode::GREATER;
-    } else if (match(Token::TOK_GEQ)) {
+      ast->lexeme = peek();
+      advance();
+    } else if (check(Token::TOK_GEQ)) {
       ast->v = BinaryOpNode::GEQ;
+      ast->lexeme = peek();
+      advance();
     } else {
       break;
     }
@@ -306,6 +340,7 @@ inline std::unique_ptr<AST> Parser::parse_additive_expr() {
   auto left = parse_multiplicative_expr();
   while (check(Token::TOK_PLUS) || check(Token::TOK_MINUS)) {
     auto ast = std::make_unique<AST>();
+    ast->lexeme = peek();
     if (match(Token::TOK_PLUS)) {
       ast->v = BinaryOpNode::PLUS;
     } else {
@@ -324,6 +359,7 @@ inline std::unique_ptr<AST> Parser::parse_multiplicative_expr() {
   while (check(Token::TOK_MUL) || check(Token::TOK_DIV) ||
          check(Token::TOK_DOT_MUL) || check(Token::TOK_DOT_DIV)) {
     auto ast = std::make_unique<AST>();
+    ast->lexeme = peek();
     if (match(Token::TOK_MUL)) {
       ast->v = BinaryOpNode::MUL;
     } else if (match(Token::TOK_DIV)) {
@@ -343,6 +379,7 @@ inline std::unique_ptr<AST> Parser::parse_multiplicative_expr() {
 }
 inline std::unique_ptr<AST> Parser::parse_unary_expr() {
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   if (match(Token::TOK_MINUS)) {
     ast->node = Node::UNARY_OP;
     ast->v = UnaryOpNode::MINUS;
@@ -367,6 +404,7 @@ inline std::unique_ptr<AST> Parser::parse_postfix_expr() {
   auto left = parse_primary_expr();
   while (1) {
     auto ast = std::make_unique<AST>();
+    ast->lexeme = peek();
     auto right = std::make_unique<AST>();
     if (match(Token::TOK_LBRACKET)) {
       ast->v = PostfixOpNode::INDEX;
@@ -398,20 +436,27 @@ inline std::unique_ptr<AST> Parser::parse_primary_expr() {
   if (check(Token::TOK_INT_LIT)) {
     ast->node = Node::INT_LIT;
     ast->v = std::stoll(peek().s);
+    ast->lexeme = peek();
     advance();
   } else if (check(Token::TOK_FLOAT_LIT)) {
     ast->node = Node::FLOAT_LIT;
     ast->v = std::stod(peek().s);
+    ast->lexeme = peek();
     advance();
-  } else if (match(Token::TOK_TRUE)) {
+  } else if (check(Token::TOK_TRUE)) {
     ast->node = Node::BOOL;
     ast->v = true;
-  } else if (match(Token::TOK_FALSE)) {
+    ast->lexeme = peek();
+    advance();
+  } else if (check(Token::TOK_FALSE)) {
     ast->node = Node::BOOL;
     ast->v = false;
+    ast->lexeme = peek();
+    advance();
   } else if (check(Token::TOK_ID)) {
     ast->node = Node::ID;
     ast->v = peek().s;
+    ast->lexeme = peek();
     advance();
   } else if (match(Token::TOK_LPAREN)) {
     ast = parse_expr();
@@ -434,8 +479,10 @@ inline void Parser::fill_expr_list(std::unique_ptr<AST> &ast) {
   }
 }
 inline std::unique_ptr<AST> Parser::parse_const_decl() {
-  consume(Token::TOK_CONST);
+  if (!check(Token::TOK_CONST)) error_function();
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  advance();
   ast->node = Node::CONST_DECL;
   ast->children.push_back(parse_id());
   if (match(Token::TOK_COLON)) {
@@ -447,8 +494,10 @@ inline std::unique_ptr<AST> Parser::parse_const_decl() {
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_function_decl() {
-  consume(Token::TOK_FN);
+  if (!check(Token::TOK_FN)) error_function();
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  advance();
   ast->node = Node::FUNCTION_DECL;
   ast->children.push_back(parse_id());
   consume(Token::TOK_LPAREN);
@@ -459,9 +508,7 @@ inline std::unique_ptr<AST> Parser::parse_function_decl() {
   if (match(Token::TOK_ARROW)) {
     ast->children.push_back(parse_type());
   }
-  consume(Token::TOK_LBRACE);
   ast->children.push_back(parse_block());
-  consume(Token::TOK_RBRACE);
   return ast;
 }
 inline void Parser::fill_param_list(std::unique_ptr<AST> &ast) {
@@ -476,12 +523,15 @@ inline std::unique_ptr<AST> Parser::parse_param() {
   ast->children.push_back(parse_id());
   consume(Token::TOK_COLON);
   ast->children.push_back(parse_type());
+  ast->lexeme = ast->children[0]->lexeme;
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_block() {
   auto ast = std::make_unique<AST>();
   ast->node = Node::BLOCK;
-  while (!check(Token::TOK_RBRACE)) {
+  ast->lexeme = peek();
+  consume(Token::TOK_LBRACE);
+  while (!match(Token::TOK_RBRACE)) {
     if (check(Token::TOK_LET)) {
       ast->children.push_back(parse_var_decl());
     } else if (check(Token::TOK_CONST)) {
@@ -496,6 +546,8 @@ inline std::unique_ptr<AST> Parser::parse_block() {
       ast->children.push_back(parse_return_stmt());
     } else if (check(Token::TOK_PRINT)) {
       ast->children.push_back(parse_print_stmt());
+    } else if (check(Token::TOK_LBRACE)) {
+      ast->children.push_back(parse_block());
     } else {
       ast->children.push_back(parse_expr_stmt());
     }
@@ -503,8 +555,9 @@ inline std::unique_ptr<AST> Parser::parse_block() {
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_var_decl() {
-  consume(Token::TOK_LET);
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  consume(Token::TOK_LET);
   ast->node = Node::VAR_DECL;
   ast->children.push_back(parse_id());
   if (match(Token::TOK_COLON)) {
@@ -520,45 +573,41 @@ inline std::unique_ptr<AST> Parser::parse_var_decl() {
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_if_stmt() {
-  consume(Token::TOK_IF);
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  consume(Token::TOK_IF);
   ast->node = Node::IF_STMT;
   ast->children.push_back(parse_expr());
-  consume(Token::TOK_LBRACE);
   ast->children.push_back(parse_block());
-  consume(Token::TOK_RBRACE);
   if (match(Token::TOK_ELSE)) {
-    consume(Token::TOK_LBRACE);
     ast->children.push_back(parse_block());
-    consume(Token::TOK_RBRACE);
   }
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_while_stmt() {
-  consume(Token::TOK_WHILE);
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  consume(Token::TOK_WHILE);
   ast->node = Node::WHILE_STMT;
   ast->children.push_back(parse_expr());
-  consume(Token::TOK_LBRACE);
   ast->children.push_back(parse_block());
-  consume(Token::TOK_RBRACE);
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_for_stmt() {
-  consume(Token::TOK_FOR);
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  consume(Token::TOK_FOR);
   ast->node = Node::FOR_STMT;
   ast->children.push_back(parse_id());
   consume(Token::TOK_IN);
   ast->children.push_back(parse_expr());
-  consume(Token::TOK_LBRACE);
   ast->children.push_back(parse_block());
-  consume(Token::TOK_RBRACE);
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_return_stmt() {
-  consume(Token::TOK_RETURN);
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
+  consume(Token::TOK_RETURN);
   ast->node = Node::RETURN_STMT;
   if (!match(Token::TOK_SEMI)) {
     ast->children.push_back(parse_expr());
@@ -568,6 +617,7 @@ inline std::unique_ptr<AST> Parser::parse_return_stmt() {
 }
 inline std::unique_ptr<AST> Parser::parse_print_stmt() {
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   ast->node = Node::PRINT_STMT;
   if (match(Token::TOK_PRINT)) {
     ast->v = PrintNode::PRINT;
@@ -583,11 +633,13 @@ inline std::unique_ptr<AST> Parser::parse_expr_stmt() {
   auto ast = std::make_unique<AST>();
   ast->node = Node::EXPR_STMT;
   ast->children.push_back(parse_expr());
+  ast->lexeme = ast->children[0]->lexeme;
   consume(Token::TOK_SEMI);
   return ast;
 }
 inline std::unique_ptr<AST> Parser::parse_extern_fn_decl() {
   auto ast = std::make_unique<AST>();
+  ast->lexeme = peek();
   ast->node = Node::EXTERN_DECL;
   consume(Token::TOK_EXTERN);
   consume(Token::TOK_FN);

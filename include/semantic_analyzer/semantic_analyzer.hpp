@@ -8,7 +8,12 @@ struct SemanticAnalyzer {
   std::optional<TypeNode> curr_func_ret_type;
   SemanticAnalyzer(AST *const root) { visit_program(root); }
   void error(AST *const root) {
-
+    std::cerr << "Semantic error in line " << root->lexeme.line_number << " at position " << root->lexeme.start;
+  }
+  [[noreturn]] void type_error(AST *const root) {
+    std::cerr << "Type mismatch error in line " << root->lexeme.line_number << " at position " << root->lexeme.start;
+    exit(1);
+  }
   void visit_program(AST *const node);
   void visit_decl(AST *const node);
   void visit_var_decl(AST *const node);
@@ -16,7 +21,6 @@ struct SemanticAnalyzer {
   static Type base_type_node_unify(TypeNode left, TypeNode right);
   static Type container_type_unify(const Type& left, const Type& right);
   void visit_id(AST *const node);
-  void visit_type(AST *const node);
   void visit_expr(AST *const node);
   void visit_assign_expr(AST *const node);
   void visit_range_expr(AST *const node);
@@ -36,7 +40,6 @@ struct SemanticAnalyzer {
   void visit_function_decl(AST *const node);
   void visit_param(AST *const node);
   void visit_block(AST *const node);
-  void visit_var_decl(AST *const node);
   void visit_if_stmt(AST *const node);
   void visit_while_stmt(AST *const node);
   void visit_for_stmt(AST *const node);
@@ -70,7 +73,7 @@ inline void SemanticAnalyzer::visit_decl(AST *const node) {
 }
 inline void SemanticAnalyzer::visit_var_decl(AST *const node) {
   std::string id = std::get<std::string>(node->children[0]->v);
-  Type type;
+  Type type; 
   if (node->children[1]->node == Node::TYPE) {
     Type type_left = node->children[1]->type;
     if (node->children.size() > 2) {
@@ -84,13 +87,124 @@ inline void SemanticAnalyzer::visit_var_decl(AST *const node) {
     visit_expr(node->children[1].get());
     type = node->children[1]->type;
   }
+  if (type.is_null) {
+    type_error(node);
+  }
   node->type = type;
   SymbolInfo sym_info(type, false);
   bool success = st->declare(id, sym_info);
-  if (!successs)
+  if (!success) {
+    error(node);
+    std::cerr << ": variable " << id << " already declared\n";
+    exit(1);
+  }
 }
-inline void SemanticAnalyzer::visit_const_decl(AST *node) {
-  SymbolInfo sym_info;
+inline void SemanticAnalyzer::visit_id(AST *const node) {
+  SymbolInfo *sym_info = st->lookup(std::get<std::string>(node->v));
+  if (!sym_info) {
+    error(node);
+    std::cerr << ": variable " << std::get<std::string>(node->v) << " is not declared\n";
+    exit(1);
+  }
+}
+inline void SemanticAnalyzer::visit_expr(AST *const node) {
+  visit_assign_expr(node);
+}
+inline void SemanticAnalyzer::visit_assign_expr(AST *const node) {
+  if (node->node == Node::RANGE) {
+    visit_range_expr(node);
+    return;
+  }
+  visit_range_expr(node->children[0].get());
+  visit_assign_expr(node->children[1].get());
+  Type type_left = node->children[0]->type;
+  Type type_right = node->children[1]->type;
+  Type type = type_unify(type_left, type_right);
+  if (type.is_null) {
+    type_error(node);
+  }
+  node->type = type;
+}
+inline void SemanticAnalyzer::visit_range_expr(AST *const node) {
+  if (node->node == Node::BINARY_OP && std::get<BinaryOpNode>(node->v) == BinaryOpNode::OR) {
+    visit_logical_or_expr(node);
+    return;
+  }
+  visit_expr(node->children[0].get());
+  if (node->children[0]->type != Type::from_type_node(TypeNode::INT)) {
+    type_error(node);
+  }
+  visit_expr(node->children[1].get());
+  if (node->children[1]->type != Type::from_type_node(TypeNode::INT)) {
+    type_error(node);
+  }
+  if (node->children.size() > 2) {
+    visit_expr(node->children[2].get());
+    if (node->children[2]->type != Type::from_type_node(TypeNode::INT)) {
+      type_error(node);
+    }
+  }
+}
+inline void SemanticAnalyzer::visit_logical_or_expr(AST *const node) {
+  if (std::get<BinaryOpNode>(node->v) == BinaryOpNode::AND) {
+    visit_logical_and_expr(node);
+    return;
+  }
+  visit_logical_or_expr(node->children[0].get());
+  visit_logical_or_expr(node->children[1].get());
+  Type type_left = type_unify(Type::from_type_node(TypeNode::BOOL), node->children[0]->type);
+  if (type_left.is_null) {
+    type_error(node);
+  }
+  Type type_right = type_unify(Type::from_type_node(TypeNode::BOOL), node->children[1]->type);
+  if (type_right.is_null) {
+    type_error(node);
+  }
+  node->type = Type::from_type_node(TypeNode::BOOL);
+}
+inline void SemanticAnalyzer::visit_logical_and_expr(AST *const node) {
+  if (std::get<BinaryOpNode>(node->v) == BinaryOpNode::BITWISE_OR) {
+    visit_bitwise_or_expr(node);
+    return;
+  }
+  visit_logical_and_expr(node->children[0].get());
+  visit_logical_and_expr(node->children[1].get());
+  Type type_left = type_unify(Type::from_type_node(TypeNode::BOOL), node->children[0]->type);
+  if (type_left.is_null) {
+    type_error(node);
+  }
+  Type type_right = type_unify(Type::from_type_node(TypeNode::BOOL), node->children[1]->type);
+  if (type_left.is_null) {
+    type_error(node);
+  }
+  node->type = Type::from_type_node(TypeNode::BOOL);
+}
+inline void SemanticAnalyzer::visit_bitwise_or_expr(AST *const node) {
+  if (std::get<BinaryOpNode>(node->v) == BinaryOpNode::BITWISE_XOR) {
+    visit_bitwise_xor_expr(node);
+    return;
+  }
+  visit_bitwise_or_expr(node->children[0].get());
+  visit_bitwise_or_expr(node->children[1].get());
+  Type type_left = type_unify(Type::from_type_node(TypeNode::INT), node->children[0]->type);
+  if (type_left.is_null) {
+    type_error(node);
+  }
+  Type type_right = type_unify(Type::from_type_node(TypeNode::INT), node->children[1]->type);
+  if (type_right.is_null) {
+    type_error(node);
+  }
+  node->type = Type::from_type_node(TypeNode::INT);
+}
+inline void SemanticAnalyzer::visit_bitwise_xor_expr(AST *const node) {
+  if (std::get<BinaryOpNode>(node->v) == BinaryOpNode::BITWISE_AND) {
+    visit_bitwise_and_expr(node);
+    return;
+  }
+  visit_bitwise_xor_expr(node->children[0].get());
+  visit_bitwise_xor_expr(node->children[1].get());
+  Type type_left = type_unify(Type::from_type_node(TypeNode::INT), node->children[0]->type)
+inline void SemanticAnalyzer::visit_const_decl(AST *const node) {
   std::string id = std::get<std::string>(node->children[0]->v);
   Type type;
   if (node->children[1]->node == Node::TYPE) {
@@ -100,7 +214,15 @@ inline void SemanticAnalyzer::visit_const_decl(AST *node) {
     type = type_unify(type_left, type_right);
   } else {
     visit_expr(node->children[1].get());
-    type = node->children[1]
+    type = node->children[1]->type;
+  }
+  SymbolInfo sym_info(type, true);
+  bool success = st->declare(id, sym_info);
+  if (!success) {
+    error(node);
+    std::cerr << ": const variable " << id << " already defined\n";
+    exit(1);
+  }
 }
 inline Type SemanticAnalyzer::type_unify(const Type& type_left, const Type& type_right) {
   switch (type_left.type_node) {
@@ -144,7 +266,7 @@ inline Type SemanticAnalyzer::container_type_unify(const Type& left, const Type&
       if (left.sizes != right.sizes) {
         return Type::error();
       }
-      TypeNode base_type = base_type_node_unify(left.base_type.value(), right.base_type.value()).type_node;
+      TypeNode base_type = base_type_node_unify(left.base_type, right.base_type).type_node;
       Type t = Type::from_type_node(left.type_node);
       t.base_type = base_type;
       t.sizes = left.sizes;

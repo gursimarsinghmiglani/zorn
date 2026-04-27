@@ -1,7 +1,7 @@
 program ::= { declaration } EOF
 
 declaration ::= var_decl 
-              | const_decl 
+              | const_decl
               | function_decl
               | extern_fn_decl
 
@@ -24,8 +24,6 @@ statement ::= var_decl
             | print_stmt
             | expr_stmt
             | block
-
-var_decl ::= LET ID ( COLON type [ ASSIGN expr ] | ASSIGN expr ) SEMI
 
 if_stmt ::= IF expr block [ ELSE block ]
 

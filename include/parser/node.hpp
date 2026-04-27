@@ -7,6 +7,7 @@ enum class Node {
   PARAM,
   BLOCK,
   VAR_DECL,
+  VAR_DEF,
   IF_STMT,
   WHILE_STMT,
   FOR_STMT,
